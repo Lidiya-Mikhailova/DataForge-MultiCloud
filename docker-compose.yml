@@ -1,0 +1,114 @@
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:-dataforge}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-dataforge}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - crm-network
+
+  etl-pipeline:
+    build:
+      context: .
+      target: production
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+      - ./dags:/app/dags
+      - ./data:/app/data
+      - ./schemas:/app/schemas
+      - ./sql:/app/sql
+      - ./etl_pipeline.py:/app/etl_pipeline.py
+    command: python etl_pipeline.py
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - crm-network
+
+  airflow-webserver:
+    image: apache/airflow:2.8.1
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
+      _PIP_ADDITIONAL_REQUIREMENTS: 'google-cloud-bigquery>=3.0 azure-storage-blob>=12.0 pandas>=2.0'
+      PYTHONPATH: /opt/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./etl_pipeline.py:/opt/airflow/etl_pipeline.py
+      - ./.env:/opt/airflow/.env
+      - ./airflow/entrypoint.sh:/entrypoint.sh
+      - ./data:/opt/airflow/data
+      - airflow_logs:/opt/airflow/logs
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    entrypoint: ["/bin/bash", "/entrypoint.sh"]
+    command: webserver
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - crm-network
+
+  airflow-scheduler:
+    image: apache/airflow:2.8.1
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      _PIP_ADDITIONAL_REQUIREMENTS: '${_PIP_ADDITIONAL_REQUIREMENTS:- apache-airflow-providers-google apache-airflow-providers-microsoft-azure hubspot-api-client pandas faker}'
+      PYTHONPATH: /opt/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./etl_pipeline.py:/opt/airflow/etl_pipeline.py
+      - ./.env:/opt/airflow/.env
+      - ./airflow/entrypoint.sh:/entrypoint.sh
+      - ./data:/opt/airflow/data
+      - airflow_logs:/opt/airflow/logs
+    depends_on:
+      airflow-webserver:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "/entrypoint.sh"]
+    command: scheduler
+    networks:
+      - crm-network
+
+volumes:
+  postgres_data:
+  airflow_logs:
+
+networks:
+  crm-network:
+    driver: bridge

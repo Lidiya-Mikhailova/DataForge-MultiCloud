@@ -1,0 +1,8 @@
+[
+  {"name": "id", "type": "STRING", "mode": "REQUIRED", "description": "Record ID"},
+  {"name": "original_data", "type": "JSON", "mode": "REQUIRED", "description": "Original invalid data"},
+  {"name": "error_message", "type": "STRING", "mode": "REQUIRED", "description": "Error description"},
+  {"name": "error_type", "type": "STRING", "mode": "REQUIRED", "description": "Error type (validation_error, missing_field, invalid_format)"},
+  {"name": "processed_at", "type": "TIMESTAMP", "mode": "REQUIRED", "description": "Processing timestamp"},
+  {"name": "run_id", "type": "STRING", "mode": "REQUIRED", "description": "ETL pipeline run ID"}
+]

@@ -1,0 +1,42 @@
+name: dataforge
+version: "1.0"
+config-version: 2
+
+profile: dataforge
+
+model-paths:
+  - models
+macro-paths:
+  - macros
+test-paths:
+  - tests
+seed-paths:
+  - seeds
+analysis-paths:
+  - analyses
+
+clean-targets:
+  - target
+  - dbt_packages
+
+vars:
+  source_dataset: crm_data_raw
+  stg_dataset: crm_data_stg
+  core_dataset: crm_data_core
+  mart_dataset: crm_data_mart
+
+models:
+  dataforge:
+    staging:
+      +materialized: view
+      +schema: STG
+      +tags: ["staging", "hourly"]
+    core:
+      +materialized: incremental
+      +incremental_strategy: merge
+      +schema: CORE
+      +tags: ["core", "hourly"]
+    mart:
+      +materialized: view
+      +schema: MART
+      +tags: ["mart", "hourly", "bi"]

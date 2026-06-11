@@ -1,0 +1,49 @@
+version: 2
+
+sources:
+  - name: hubspot_raw
+    database: "{{ env_var('BIGQUERY_PROJECT_ID') }}"
+    schema: "{{ var('source_dataset', 'crm_data_raw') }}"
+    description: "Raw ingestion layer — populated by Python ETL pipeline (Pydantic validation)"
+    tables:
+      - name: contacts_raw
+        description: "Append-only raw contacts after Pydantic validation, partitioned by ingestion time"
+        columns:
+          - name: contact_id
+            description: "HubSpot contact ID (unique per source)"
+            tests:
+              - not_null
+          - name: email
+            description: "Contact email"
+            tests:
+              - not_null
+          - name: run_id
+            description: "ETL pipeline run identifier"
+            tests:
+              - not_null
+          - name: lead_status
+            description: "Current lead status in sales pipeline"
+        loaded_at_field: processed_at
+        freshness:
+          warn_after:
+            count: 6
+            period: hour
+          error_after:
+            count: 24
+            period: hour
+
+      - name: contacts_quarantine
+        description: "Invalid contacts rejected by Pydantic validation, stored with error metadata"
+        columns:
+          - name: id
+            tests:
+              - not_null
+              - unique
+          - name: error_type
+            description: "Classification: ValidationError, MissingEmail, etc."
+          - name: quarantined_at
+        loaded_at_field: quarantined_at
+        freshness:
+          warn_after:
+            count: 12
+            period: hour

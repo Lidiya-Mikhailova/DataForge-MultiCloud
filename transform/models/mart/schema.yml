@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: mart_lead_analytics
+    description: "BI-ready view — lead source performance and conversion"
+    columns:
+      - name: lead_source
+        tests:
+          - not_null
+      - name: total_leads
+      - name: conversion_rate_pct
+
+  - name: mart_sales_funnel
+    description: "BI-ready view — pipeline stages with contact and revenue counts"
+    columns:
+      - name: stage
+        tests:
+          - not_null
+      - name: pipeline_value
+
+  - name: mart_industry_analytics
+    description: "BI-ready view — industry-level aggregation"
+    columns:
+      - name: industry
+        tests:
+          - not_null
+
+  - name: mart_conversion_metrics
+    description: "BI-ready view — conversion rates across time windows"
+
+  - name: mart_data_quality
+    description: "BI-ready view — data quality score and record counts"
+
+  - name: mart_daily_trends
+    description: "BI-ready view — daily lead and conversion trends"
+    columns:
+      - name: date
+        tests:
+          - not_null
+      - name: new_leads

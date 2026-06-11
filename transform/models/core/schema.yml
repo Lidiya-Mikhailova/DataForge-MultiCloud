@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: core_contacts
+    description: "Deduplicated, partitioned, clustered contacts warehouse table. Populated via incremental MERGE on contact_id."
+    columns:
+      - name: contact_id
+        description: "HubSpot contact ID — unique identifier"
+        tests:
+          - not_null
+          - unique
+      - name: email
+        tests:
+          - not_null
+      - name: first_name
+      - name: last_name
+      - name: company_name
+      - name: job_title
+      - name: industry
+        tests:
+          - accepted_values:
+              values:
+                - Technology
+                - Healthcare
+                - Finance
+                - Manufacturing
+                - Retail
+                - Education
+                - Real Estate
+                - Consulting
+                - Energy
+                - Media
+                - E-commerce
+                - Aerospace
+                - Telecommunications
+                - Transportation
+                - Hospitality
+                - unknown
+      - name: annual_revenue
+      - name: numberofemployees
+      - name: created_at
+        tests:
+          - not_null
+      - name: lead_status
+        tests:
+          - accepted_values:
+              values:
+                - NEW
+                - OPEN
+                - IN_PROGRESS
+                - UNQUALIFIED
+                - ATTENDED
+                - CONNECTED
+                - WORKING
+                - CLOSED
+                - UNASSIGNED
+      - name: hs_analytics_source
+      - name: processed_at
+        tests:
+          - not_null
+      - name: run_id
+        tests:
+          - not_null

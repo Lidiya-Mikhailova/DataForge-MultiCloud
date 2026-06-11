@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: stg_contacts
+    description: "Cleaned and standardized contacts from raw BigQuery ingestion layer. NULL-safe trimming, default values for lead_status and source."
+    columns:
+      - name: contact_id
+        tests:
+          - not_null
+          - unique
+      - name: email
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["test@example.com"]
+              quote: true
+              config:
+                enabled: false
+      - name: lead_status
+        tests:
+          - accepted_values:
+              values:
+                - NEW
+                - OPEN
+                - IN_PROGRESS
+                - UNQUALIFIED
+                - ATTENDED
+                - CONNECTED
+                - WORKING
+                - CLOSED
+                - UNASSIGNED
+      - name: annual_revenue
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              config:
+                enabled: false
+      - name: run_id
+        tests:
+          - not_null

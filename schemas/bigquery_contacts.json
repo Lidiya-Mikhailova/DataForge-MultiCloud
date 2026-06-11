@@ -1,0 +1,18 @@
+[
+  {"name": "contact_id", "type": "STRING", "mode": "REQUIRED", "description": "HubSpot contact ID"},
+  {"name": "email", "type": "STRING", "mode": "REQUIRED", "description": "Contact email"},
+  {"name": "first_name", "type": "STRING", "mode": "NULLABLE", "description": "First name"},
+  {"name": "last_name", "type": "STRING", "mode": "NULLABLE", "description": "Last name"},
+  {"name": "company_name", "type": "STRING", "mode": "NULLABLE", "description": "Company name"},
+  {"name": "job_title", "type": "STRING", "mode": "NULLABLE", "description": "Job title"},
+  {"name": "industry", "type": "STRING", "mode": "NULLABLE", "description": "Company industry"},
+  {"name": "annual_revenue", "type": "INT64", "mode": "NULLABLE", "description": "Annual revenue"},
+  {"name": "numberofemployees", "type": "INT64", "mode": "NULLABLE", "description": "Number of employees"},
+  {"name": "created_at", "type": "TIMESTAMP", "mode": "REQUIRED", "description": "Creation timestamp"},
+  {"name": "lastmodifieddate", "type": "TIMESTAMP", "mode": "NULLABLE", "description": "Last modification timestamp"},
+  {"name": "lead_status", "type": "STRING", "mode": "NULLABLE", "description": "Lead status"},
+  {"name": "hs_analytics_source", "type": "STRING", "mode": "NULLABLE", "description": "Lead source"},
+  {"name": "hs_analytics_source_data_1", "type": "STRING", "mode": "NULLABLE", "description": "Campaign name"},
+  {"name": "processed_at", "type": "TIMESTAMP", "mode": "REQUIRED", "description": "Pipeline processing timestamp"},
+  {"name": "run_id", "type": "STRING", "mode": "REQUIRED", "description": "ETL pipeline run ID"}
+]

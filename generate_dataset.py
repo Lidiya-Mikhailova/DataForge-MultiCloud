@@ -1,7 +1,6 @@
 import json
 import random
 from datetime import datetime, timedelta
-import uuid
 
 random.seed(42)
 
@@ -59,13 +58,13 @@ def generate_invalid_email(reason: str) -> str:
     if reason == "no_at":
         return f"invalidemail{''.join(random.choices('abcdefghij', k=8))}.com"
     elif reason == "no_domain":
-        return f"user@"
+        return "user@"
     elif reason == "no_tld":
-        return f"user@domain"
+        return "user@domain"
     elif reason == "spaces":
-        return f"user name@company.com"
+        return "user name@company.com"
     elif reason == "special_chars":
-        return f"user!#$%@company.com"
+        return "user!#$%@company.com"
     elif reason == "empty":
         return ""
     else:
@@ -170,7 +169,6 @@ def generate_dataset(total_records: int = 1000, invalid_percentage: float = 0.25
     invalid_count = int(total_records * invalid_percentage)
     valid_count = total_records - invalid_count
     
-    duplicate_ids = set()
     for i in range(1, valid_count + 1):
         record = generate_record(i, make_invalid=False)
         records.append(record)
@@ -214,7 +212,7 @@ def main():
     ids = [r["id"] for r in records]
     duplicates_count = len(ids) - len(set(ids))
     
-    print(f"\nData quality summary:")
+    print("\nData quality summary:")
     print(f"  Total records: {len(records)}")
     print(f"  Invalid emails (no @): {invalid_emails_count}")
     print(f"  Null/empty emails: {null_emails_count}")

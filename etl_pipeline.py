@@ -8,7 +8,6 @@ import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, Optional
 
-import pandas as pd
 from pydantic_settings import BaseSettings
 
 from src.extractors.hubspot import HubspotDataExtractor
@@ -17,7 +16,7 @@ from src.infrastructure.clients.hubspot_client import HubspotApiClient, MockHubs
 from src.infrastructure.clients.local_client import LocalStorageClient
 from src.loaders.azure_loader import AzureBlobLoader
 from src.loaders.local_loader import LocalStorageLoader
-from src.schemas.data_models import Contact, InvalidRecord, ValidationResult
+from src.schemas.data_models import ValidationResult
 from src.transformers.data_processor import HubspotContactTransformer
 
 if TYPE_CHECKING:
@@ -328,7 +327,7 @@ def stage_transform(
 def run_etl_pipeline(
     extractor: HubspotDataExtractor,
     transformer: HubspotContactTransformer,
-    azure_loader: AzureBlobLoader,
+    azure_loader: AzureBlobLoader | LocalStorageLoader,
     warehouse: Optional[tuple[WarehouseClient, WarehouseLoader]],
     settings: Settings,
     path_prefix: str = "hubspot/contacts",
@@ -375,7 +374,7 @@ def main() -> None:
 
     if settings.STORAGE_MODE == "local":
         logger.info("  STORAGE_MODE: local (DuckDB + Parquet)")
-        loader = create_local_loader(settings)
+        loader: AzureBlobLoader | LocalStorageLoader = create_local_loader(settings)
     else:
         logger.info("  STORAGE_MODE: cloud (Azure Blob Storage)")
         loader = create_azure_loader(settings)

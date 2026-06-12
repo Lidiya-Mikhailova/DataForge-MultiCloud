@@ -1,7 +1,6 @@
 import logging
-from typing import Any
 
-from src.infrastructure.clients.azure_client import AzureBlobClient
+from src.infrastructure.clients.azure_client import AzureClient
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +14,7 @@ class AzureBlobLoader:
 
     def __init__(
         self,
-        blob_client: AzureBlobClient,
+        blob_client: AzureClient,
         *,
         raw_container: str,
         processed_container: str,

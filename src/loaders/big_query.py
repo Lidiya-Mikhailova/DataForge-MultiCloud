@@ -1,9 +1,6 @@
 import logging
 from typing import Optional
 
-from google.cloud import bigquery
-from google.cloud.bigquery import SchemaField
-
 logger = logging.getLogger(__name__)
 
 

@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from pydantic import ValidationError
 
@@ -78,6 +77,14 @@ class HubspotContactTransformer:
             return
 
         try:
+            from datetime import datetime
+            parsed_revenue = int(raw_contact.annual_revenue) if raw_contact.annual_revenue else None
+            parsed_created_at: datetime | None = None
+            if raw_contact.created_at:
+                try:
+                    parsed_created_at = datetime.fromisoformat(raw_contact.created_at.replace("Z", "+00:00"))
+                except (ValueError, TypeError):
+                    pass
             contact = Contact(
                 contact_id=raw_contact.contact_id,
                 email=raw_contact.email,
@@ -85,8 +92,8 @@ class HubspotContactTransformer:
                 last_name=raw_contact.last_name,
                 company_name=raw_contact.company_name,
                 job_title=raw_contact.job_title,
-                annual_revenue=raw_contact.annual_revenue,
-                created_at=raw_contact.created_at,
+                annual_revenue=parsed_revenue,
+                created_at=parsed_created_at,
             )
             valid.append(contact)
         except ValidationError as e:
@@ -131,15 +138,16 @@ class HubspotContactTransformer:
 
         try:
             from datetime import datetime
-            createdate = raw_contact.properties.createdate
-            if createdate:
+            createdate_raw = raw_contact.properties.createdate
+            parsed_createdate: datetime | None = None
+            if createdate_raw:
                 try:
-                    createdate = createdate.replace("Z", "+00:00")
-                    if createdate.endswith(" +0000"):
-                        createdate = createdate.replace(" +0000", "+00:00")
-                    createdate = datetime.fromisoformat(createdate)
+                    cleaned = createdate_raw.replace("Z", "+00:00")
+                    if cleaned.endswith(" +0000"):
+                        cleaned = cleaned.replace(" +0000", "+00:00")
+                    parsed_createdate = datetime.fromisoformat(cleaned)
                 except (ValueError, TypeError):
-                    createdate = None
+                    parsed_createdate = None
             
             contact = Contact(
                 contact_id=raw_contact.id,
@@ -151,7 +159,7 @@ class HubspotContactTransformer:
                 industry=raw_contact.properties.industry,
                 annual_revenue=int(raw_contact.properties.annualrevenue) if raw_contact.properties.annualrevenue else None,
                 numberofemployees=int(raw_contact.properties.numberofemployees) if raw_contact.properties.numberofemployees else None,
-                created_at=createdate,
+                created_at=parsed_createdate,
                 lead_status=raw_contact.properties.leadstatus,
                 hs_analytics_source=raw_contact.properties.hs_analytics_source,
                 hs_analytics_source_data_1=raw_contact.properties.hs_analytics_source_data_1,

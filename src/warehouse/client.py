@@ -70,7 +70,7 @@ class WarehouseClient:
                         cfg.clustering_fields or "none")
 
     def _create_mart_views(self) -> None:
-        from src.warehouse.config import CORE_CONTACTS_TABLE, RAW_CONTACTS_TABLE, QUARANTINE_TABLE
+        from src.warehouse.config import CORE_CONTACTS_TABLE, QUARANTINE_TABLE
         views = build_all_mart_views(
             project_id=self.project_id,
             core_dataset=CORE_DATASET,

@@ -7,7 +7,7 @@ import sys
 from datetime import datetime, timedelta
 from typing import Any
 
-from airflow import DAG
+from airflow import DAG  # type: ignore[attr-defined]
 from airflow.operators.python import PythonOperator
 
 _DAG_DIR = os.path.dirname(os.path.abspath(__file__))

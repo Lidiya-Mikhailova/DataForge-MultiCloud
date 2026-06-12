@@ -1,9 +1,9 @@
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    model_config = ConfigDict(env_file=".env", extra="ignore")
+    model_config = {"env_file": ".env", "extra": "ignore"}
 
     HUBSPOT_ACCESS_TOKEN: str = ""
     AZURE_STORAGE_CONNECTION_STRING: str = ""

@@ -98,9 +98,23 @@ jobs:
         run: pip install dbt-core dbt-bigquery
 
       - name: dbt parse
+        env:
+          BIGQUERY_PROJECT_ID: "dummy"
         run: |
-          cd ${{ env.DBT_PROJECT_DIR }}
-          dbt parse --profiles-dir .
+          cat > ${{ env.DBT_PROJECT_DIR }}/profiles.yml << 'EOF'
+          dataforge:
+            target: ci
+            outputs:
+              ci:
+                type: bigquery
+                method: service-account
+                project: project
+                dataset: dataset
+                location: US
+                keyfile: /dev/null
+                threads: 1
+          EOF
+          dbt parse --project-dir ${{ env.DBT_PROJECT_DIR }} --profiles-dir ${{ env.DBT_PROJECT_DIR }}
 
 
   integration:
@@ -111,8 +125,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
       - name: Validate docker-compose
-        run: docker compose config
+        env:
+          POSTGRES_PASSWORD: postgres
+        run: |
+          touch .env
+          docker compose config
 
       - name: Run ETL mock
         run: python etl_pipeline.py

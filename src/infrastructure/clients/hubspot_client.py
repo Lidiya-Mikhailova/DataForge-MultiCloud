@@ -60,7 +60,7 @@ class HubspotApiClient(HubspotClient):
             "Content-Type": "application/json",
         }
 
-        params = {"limit": 100}
+        params: dict[str, int | str] = {"limit": 100}
         if since:
             params["created__gte"] = since
 

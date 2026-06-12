@@ -1,8 +1,6 @@
 import logging
-from typing import Optional
 
 from src.infrastructure.clients.azure_client import AzureClient
-from src.infrastructure.clients.local_client import LocalStorageClient
 
 logger = logging.getLogger(__name__)
 

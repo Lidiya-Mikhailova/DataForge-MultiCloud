@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from src.core.interfaces import Extractor
 from src.infrastructure.clients.azure_client import AzureClient
@@ -11,7 +10,7 @@ class AzureRawExtractor(Extractor):
     def __init__(self, azure_client: AzureClient) -> None:
         self._azure_client = azure_client
 
-    def extract(self, prefix: Optional[str] = "hubspot/contacts") -> list[dict]:
+    def extract(self, prefix: str = "hubspot/contacts") -> list[dict]:
         try:
             logger.info(f"Listing blobs with prefix: {prefix}")
             blobs = self._azure_client.list_blobs(prefix=prefix)

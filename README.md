@@ -1,6 +1,6 @@
 # DataForge-MultiCloud — ETL Pipeline
 
-[![CI/CD](https://github.com/YOUR_ORG/dataforge-multicloud/actions/workflows/etl.yml/badge.svg)](https://github.com/YOUR_ORG/dataforge-multicloud/actions/workflows/etl.yml)
+[![CI/CD](https://github.com/Lidiya-Mikhailova/DataForge-MultiCloud/actions/workflows/etl.yml/badge.svg)](https://github.com/Lidiya-Mikhailova/DataForge-MultiCloud/actions/workflows/etl.yml)
 
 
 ---
